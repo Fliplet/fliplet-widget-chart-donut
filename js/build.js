@@ -25,6 +25,8 @@
         chartReady = resolve;
       });
 
+      $container.translate();
+
       function resetData() {
         data.entries = [];
         data.totalEntries = 0;
@@ -86,14 +88,14 @@
                 data.name = data.dataSourceQuery.columns.category;
                 result.dataSourceEntries.forEach(function(row, i) {
                   data.entries.push({
-                    name: row[data.dataSourceQuery.columns.category] || 'Category ' + (i+1),
+                    name: row[data.dataSourceQuery.columns.category] || T('widgets.chart.donut.category') + ' ' + TN(i + 1),
                     y: parseInt(row[data.dataSourceQuery.columns.value]) || 0
                   });
                 });
                 break;
               case 1:
                 // Summarise data
-                data.name = 'Count of ' + data.dataSourceQuery.columns.column;
+                data.name = T('widgets.chart.donut.count') + ' ' + data.dataSourceQuery.columns.column;
                 result.dataSourceEntries.forEach(function(row) {
                   var value = row[data.dataSourceQuery.columns.column];
 
@@ -146,9 +148,9 @@
 
       function refreshChartInfo() {
         // Update total count
-        $container.find('.total').html(data.totalEntries);
+        $container.find('.total').html(TN(data.totalEntries));
         // Update last updated time
-        $container.find('.updatedAt').html(moment().format(updateDateFormat));
+        $container.find('.updatedAt').html(TD(new Date(), { format: 'LTS' }));
       }
 
       function refreshChart() {
