@@ -120,7 +120,14 @@
                     }
                   });
                 });
-                break;
+
+                return Fliplet.Hooks.run('afterChartSummary', {
+                  config: data,
+                  id: data.id,
+                  uuid: data.uuid,
+                  type: 'donut',
+                  records: result
+                });
             }
           }).then(function() {
             data.entries = _.reverse(_.sortBy(data.entries, function(o) {
