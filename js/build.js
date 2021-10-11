@@ -1,11 +1,11 @@
-(function(){
-  window.ui = window.ui || {}
+(function() {
+  window.ui = window.ui || {};
   ui.flipletCharts = ui.flipletCharts || {};
 
   Fliplet.Chart = Fliplet.Widget.Namespace('chart');
 
   function init() {
-    Fliplet.Widget.instance('chart-donut-1-1-0', function (data) {
+    Fliplet.Widget.instance('chart-donut-1-1-0', function(data) {
       var chartId = data.id;
       var chartUuid = data.uuid;
       var $container = $(this);
@@ -26,21 +26,16 @@
 
       $container.translate();
 
-      function resetData() {
-        data.entries = [];
-        data.totalEntries = 0;
-        data.name = '';
-      }
-
       function refreshData() {
         if (typeof data.dataSourceQuery !== 'object') {
           data.entries = [
-            {name: 'A', y: 3, sliced: true, selected: true},
-            {name: 'B', y: 2},
-            {name: 'C', y: 1}
+            { name: 'A', y: 3, sliced: true, selected: true },
+            { name: 'B', y: 2 },
+            { name: 'C', y: 1 }
           ];
           data.totalEntries = 6;
-          return Promise.resolve()
+
+          return Promise.resolve();
         }
 
         // beforeQueryChart is deprecated
@@ -63,9 +58,9 @@
           }
 
           return Fliplet.DataSources.fetchWithOptions(data.dataSourceQuery);
-        }).then(function(result){
+        }).then(function(result) {
           // afterQueryChart is deprecated
-          return Fliplet.Hooks.run('afterQueryChart', result).then(function () {
+          return Fliplet.Hooks.run('afterQueryChart', result).then(function() {
             return Fliplet.Hooks.run('afterChartQuery', {
               config: data,
               id: data.id,
@@ -73,13 +68,16 @@
               type: 'donut',
               records: result
             });
-          }).then(function () {
+          }).then(function() {
             var columns = [];
+
             data.entries = [];
             data.totalEntries = 0;
+
             if (!result.dataSource.columns.length) {
               return Promise.resolve();
             }
+
             switch (data.dataSourceQuery.selectedModeIdx) {
               case 0:
               default:
@@ -88,7 +86,7 @@
                 result.dataSourceEntries.forEach(function(row, i) {
                   data.entries.push({
                     name: row[data.dataSourceQuery.columns.category] || T('widgets.chart.donut.category') + ' ' + TN(i + 1),
-                    y: parseInt(row[data.dataSourceQuery.columns.value]) || 0
+                    y: parseInt(row[data.dataSourceQuery.columns.value], 10) || 0
                   });
                 });
                 break;
@@ -123,26 +121,35 @@
                     }
                   });
                 });
-                break;
+
+                return Fliplet.Hooks.run('afterChartSummary', {
+                  config: data,
+                  id: data.id,
+                  uuid: data.uuid,
+                  type: 'donut',
+                  records: result
+                });
             }
-            data.entries = _.reverse(_.sortBy(data.entries, function(o){
+          }).then(function() {
+            data.entries = _.reverse(_.sortBy(data.entries, function(o) {
               return o.y;
             }));
+
             if (data.entries.length) {
               data.entries[0].sliced = true;
               data.entries[0].selected = true;
             }
 
             // SAVES THE TOTAL NUMBER OF ROW/ENTRIES
-            data.totalEntries = _.reduce(data.entries, function(sum, o){
+            data.totalEntries = _.reduce(data.entries, function(sum, o) {
               return sum + o.y;
             }, 0);
 
             return Promise.resolve();
-          }).catch(function(error){
+          }).catch(function(error) {
             return Promise.reject(error);
           });
-        })
+        });
       }
 
       function refreshChartInfo() {
@@ -163,6 +170,7 @@
         // Update values
         chart.series[0].setData(data.entries);
         refreshChartInfo();
+
         return Promise.resolve(chart);
       }
 
@@ -172,13 +180,13 @@
           refreshTimer = null;
         }
 
-        return refreshData().then(function () {
+        return refreshData().then(function() {
           if (data.autoRefresh) {
             setRefreshTimer();
           }
 
           return refreshChart();
-        }).catch(function (err) {
+        }).catch(function(err) {
           if (data.autoRefresh) {
             setRefreshTimer();
           }
@@ -257,7 +265,7 @@
       });
 
       function drawChart() {
-        return new Promise(function (resolve, reject) {
+        return new Promise(function(resolve, reject) {
           var customColors = Fliplet.Themes.Current.getSettingsForWidgetInstance(chartUuid);
 
           colors.forEach(function eachColor(color, index) {
@@ -280,6 +288,7 @@
               inheritColor('secondaryColor', colors, index);
             }
           });
+
           var chartOpt = {
             chart: {
               type: 'pie',
@@ -291,13 +300,14 @@
                 fontFamily: (Fliplet.Themes && Fliplet.Themes.Current.get('bodyFontFamily')) || 'sans-serif'
               },
               events: {
-                load: function(){
+                load: function() {
                   refreshChartInfo();
+
                   if (data.autoRefresh) {
                     setRefreshTimer();
                   }
                 },
-                render: function () {
+                render: function() {
                   ui.flipletCharts[chartId] = this;
                   Fliplet.Hooks.run('afterChartRender', {
                     chart: ui.flipletCharts[chartId],
@@ -354,14 +364,14 @@
               innerSize: '38%',
               data: data.entries,
               events: {
-                click: function () {
+                click: function() {
                   Fliplet.Analytics.trackEvent({
                     category: 'chart',
                     action: 'data_point_interact',
                     label: 'donut'
                   });
                 },
-                legendItemClick: function () {
+                legendItemClick: function() {
                   Fliplet.Analytics.trackEvent({
                     category: 'chart',
                     action: 'legend_filter',
@@ -374,6 +384,7 @@
               enabled: false
             }
           };
+
           // Create and save chart object
           Fliplet.Hooks.run('beforeChartRender', {
             chartOptions: chartOpt,
@@ -381,7 +392,7 @@
             uuid: data.uuid,
             type: 'donut',
             config: data
-          }).then(function () {
+          }).then(function() {
             try {
               chartInstance = new Highcharts.Chart(chartOpt);
             } catch (e) {
@@ -406,7 +417,7 @@
       Fliplet.Hooks.on('appearanceChanged', redrawChart);
       Fliplet.Hooks.on('appearanceFileChanged', redrawChart);
 
-      refreshData().then(drawChart).catch(function(error){
+      refreshData().then(drawChart).catch(function(error) {
         console.error(error);
         setRefreshTimer();
       });
@@ -421,9 +432,10 @@
     });
   }
 
-  Fliplet().then(function(){
+  Fliplet().then(function() {
     var debounceLoad = _.debounce(init, 500, { leading: true });
-    Fliplet.Studio.onEvent(function (event) {
+
+    Fliplet.Studio.onEvent(function(event) {
       if (event.detail.event === 'reload-widget-instance') {
         debounceLoad();
       }
