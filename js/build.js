@@ -94,7 +94,7 @@
                 break;
               case 1:
                 // Summarise data
-                data.name = T('widgets.chart.donut.count') + ' ' + data.dataSourceQuery.columns.column;
+                data.name = T('widgets.chart.donut.count', { column: data.dataSourceQuery.columns.column});
                 result.dataSourceEntries.forEach(function(row) {
                   var value = row[data.dataSourceQuery.columns.column];
 
