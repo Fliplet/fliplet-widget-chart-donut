@@ -134,11 +134,6 @@
               return o.y;
             }));
 
-            if (data.entries.length) {
-              data.entries[0].sliced = false;
-              data.entries[0].selected = false;
-            }
-
             // SAVES THE TOTAL NUMBER OF ROW/ENTRIES
             data.totalEntries = _.reduce(data.entries, function(sum, o) {
               return sum + o.y;
