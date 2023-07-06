@@ -276,7 +276,11 @@ Fliplet.Widget.instance('chart-donut-1-1-0', function(data) {
             colors[index] = newColor;
             inheritColor1 = colorKey !== 'chartColor1';
             inheritColor2 = colorKey !== 'chartColor2';
-          } else if (colorKey === 'chartColor1' && inheritColor1) {
+          } else if (Fliplet.Themes.Current.get(colorKey)) {
+            colors[index] = Fliplet.Themes.Current.get(colorKey);
+          }
+
+          if (colorKey === 'chartColor1' && inheritColor1) {
             inheritColor('highlightColor', colors, index);
           } else if (colorKey === 'chartColor2' && inheritColor2) {
             inheritColor('secondaryColor', colors, index);
