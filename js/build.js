@@ -44,7 +44,7 @@ Fliplet.Widget.instance('chart-donut-1-1-0', function(data) {
           type: 'donut'
         });
       }).then(function() {
-        if (_.isFunction(data.getData)) {
+        if (Fliplet.Utils.isFunction(data.getData)) {
           var response = data.getData();
 
           if (!(response instanceof Promise)) {
@@ -130,12 +130,12 @@ Fliplet.Widget.instance('chart-donut-1-1-0', function(data) {
               });
           }
         }).then(function() {
-          data.entries = _.reverse(_.sortBy(data.entries, function(o) {
+          data.entries = Fliplet.Utils.reverse(Fliplet.Utils.sortBy(data.entries, function(o) {
             return o.y;
           }));
 
           // SAVES THE TOTAL NUMBER OF ROW/ENTRIES
-          data.totalEntries = _.reduce(data.entries, function(sum, o) {
+          data.totalEntries = Fliplet.Utils.reduce(data.entries, function(sum, o) {
             return sum + o.y;
           }, 0);
 
@@ -446,7 +446,7 @@ Fliplet.Widget.instance('chart-donut-1-1-0', function(data) {
   }
 
   Fliplet().then(function() {
-    var debounceLoad = _.debounce(init, 500, { leading: true });
+    var debounceLoad = Fliplet.Utils.debounce(init, 500, { leading: true });
 
     Fliplet.Studio.onEvent(function(event) {
       if (event.detail.event === 'reload-widget-instance') {
